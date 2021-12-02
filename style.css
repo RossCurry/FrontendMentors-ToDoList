@@ -77,7 +77,8 @@ body {
   justify-self: end;
 }
 
-form {
+form, 
+.listItem {
   background: rgb(255, 255, 255);
   width: 100%;
   border-radius: .25em;
@@ -92,10 +93,35 @@ form .circle {
   justify-self: center;
   align-self: center;
   border: 2px solid rgba(192, 192, 192, 0.596);
+  background: none;
 }
 form input {
   border: none;
   border-radius: 0 .25em .25em 0;
   padding: 1em;
   font-size: 1rem;
+  width: 85%;
+}
+.listItem {
+  padding: 1em 0;
+  margin: 0.5rem 0;
+  display: grid;
+  grid-template-columns: 15% 85%;
+  background: rgb(214, 214, 214);
+}
+
+.listTitle {
+  color: #757575;
+  margin-left: 1rem;
+}
+
+.listButton {
+  border-radius: 50%;
+  border: none;
+  background-color: #757575 ;
+  width: 1rem;
+  height: 1rem;
+  justify-self: center;
+  align-self: center;
+  cursor: pointer;
 }
