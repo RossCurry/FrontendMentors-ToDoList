@@ -8,28 +8,44 @@
     "Pick up groceries",
     "Complete Todo App on Frontend Mentor",
   ]
+
+
+  class ListItem {
+    constructor(title, currentList){
+      this.id = generateId(currentList);
+      this.title = title;
+      this.created = new Date();
+      this.status = 'todo';
+    }
+  }
+
   class TodoList {
     constructor (startList) {
-      this.list = startList || [];
-      this.init();
+      this.list = [];
       this.container;
       this.form;
+      this.listContainer;
+      this.init(startList);
     }
 
     addItem(item){
-      // if (!item.id || !item.title || !this.created ) return;
+      if (!item.id || !item.title || !item.created ) return;
       this.list.push(item);
       const listItem = document.createElement('ul');
       const doneButton = document.createElement('button');
       const title = document.createElement('div');
+      // list item
       listItem.appendChild(doneButton)
       listItem.appendChild(title)
-      title.textContent = item.title + ': ' + item.status;
       listItem.classList.add('listItem');
+      // title
+      title.textContent = item.title + ': ' + item.status;
       title.classList.add('listTitle');
+      //button
       doneButton.classList.add('listButton');
-      const listContainer = document.getElementById('listContainer');
-      listContainer.appendChild(listItem);
+      doneButton.textContent = item.status;
+      // append items
+      this.listContainer.appendChild(listItem);
 
       // button
       doneButton.addEventListener('click', (e) => {
@@ -58,7 +74,7 @@
       return this.list.length;
     }
 
-    init(){
+    init(startList){
       // DOM Manipulation
       // find todoContainer
       this.container = document.getElementById("todo__container");
@@ -74,13 +90,12 @@
       // the form is: header / form input(btn&text) / List / List items / menu for filtering & actions
       this.drawHeader();
       this.drawFormInput();
-      this.drawList();
+      this.drawList(startList);
       this.drawMenu();
     }
 
     drawHeader(){
       // draw header
-      console.log('drawHeader ');
       const header = document.createElement("header");
       const title = document.createElement("h1");
       // title
@@ -103,7 +118,6 @@
     
     drawFormInput(){
       // draw FormInput
-      console.log('FormInput -');
       const inputContainer = document.createElement("div");
       const submitBtn = document.createElement("button");
       const textInput = document.createElement("input");
@@ -113,13 +127,12 @@
       submitBtn.type = "submit";
       submitBtn.setAttribute("form", this.form.id);
       submitBtn.name = "addTodoItem";
+      submitBtn.textContent = "add";
 
       // text input
       textInput.name = "todoInput";
       textInput.type = "text";
       textInput.placeholder = "Create a new todo...";
-      console.log('formContainer -> ', inputContainer);
-      console.log('textInput -> ', textInput);
       // append elements
       inputContainer.appendChild(submitBtn);
       inputContainer.appendChild(textInput);
@@ -127,14 +140,26 @@
       return inputContainer;
     }
     
-    drawList(){
+    drawList(startList){
+      // list container
+      this.listContainer = document.createElement("li");
+      this.listContainer.classList.add("listContainer");
+      // append elements
+      this.form.appendChild(this.listContainer);
       // draw List
-      console.log('drawList ->');
+      // populate list from constructor
+      if (Array.isArray(startList)) {
+        startList.forEach(item => {
+          if (typeof item !== "string") return;
+          const newItem = new ListItem(item, this.list)
+          console.log("newItem", newItem);
+          this.addItem(newItem)
+        })
+      }
     }
     
     drawMenu(){
       // draw Menu
-      console.log('drawMenu ->');
       const menu = document.createElement("menu");
       const counter = document.createElement("div");
       const filter = document.createElement("div");
@@ -198,25 +223,20 @@
   const todoList = new TodoList (dummyList);
   console.log(todoList.getAll())
   
-  class ListItem {
-    constructor(title){
-      this.id = this.generateId();
-      this.title = title;
-      this.created = new Date();
-      this.status = 'todo';
-      
-    }
-    
-    generateId(){
-      const randomId = Math.floor(Math.random()*100000000);
-      if (todoList.getAll().some(item => item.id === randomId)) {
-        this.generateId();
+
+  // Helper function
+  function generateId(list){
+    const randomId = Math.floor(Math.random()*100000000);
+    if (list && list.length > 0) {
+      if (list.some(item => item.id === randomId)) {
+        generateId();
       } else {
         return randomId;
       }
+    } else {
+      return randomId;
     }
   }
 
-  
 
 })()
