@@ -8,6 +8,7 @@
     "Pick up groceries",
     "Complete Todo App on Frontend Mentor",
   ]
+  let darkMode = false;
 
 
   class ListItem {
@@ -81,7 +82,6 @@
       // add form & append
       this.form = document.createElement("form");
       this.container.textContent = "container";
-      this.form.textContent = "form";
       this.container.append(this.form);
 
       // The form
@@ -98,20 +98,50 @@
       // draw header
       const header = document.createElement("header");
       const title = document.createElement("h1");
+      
       // title
       title.textContent = "TODO"
-      // checkbox
-      const toggleWrapper = document.createElement("label");
+      
+      // checkbox & label
+      const toggleLabel = document.createElement("label");
+      toggleLabel.classList.add("toggleWrapper");
+      toggleLabel.style.width = "26px";
+      toggleLabel.setAttribute("for", "DarkModeToggle")
       const checkBox = document.createElement("input");
-      const span = document.createElement("span");
-      toggleWrapper.appendChild(checkBox);
-      toggleWrapper.appendChild(span);
+      checkBox.id = "DarkModeToggle";
       checkBox.type = "checkbox";
-      toggleWrapper.classList.add("toggleWrapper")
+      checkBox.value = "night";
+      checkBox.addEventListener("change", (e) => {
+        console.log(e.target.value);
+        if (checkBox.checked) {
+          // moonImg.setAttribute("style", "opacity: 0")
+          moonImg.style.opacity = 0;
+          sunImg.style.opacity = 1;
+        } else {
+          moonImg.style.opacity = 1;
+          sunImg.style.opacity = 0;
+        }
+        darkMode = !darkMode;
+        console.log("darkMode", darkMode)
+      })
+      
+      // SVG
+      const moonImg = document.createElement("img");
+      moonImg.classList.add("moonImg");
+      moonImg.setAttribute("src", "assets/images/icon-moon.svg");
+      const sunImg = document.createElement("img");
+      sunImg.style.opacity = 0;
+      sunImg.classList.add("sunImg");
+      sunImg.setAttribute("src", "assets/images/icon-sun.svg");
+      const span = document.createElement("span");
       
       // append elements
+      span.appendChild(moonImg);
+      span.appendChild(sunImg);
+      toggleLabel.appendChild(checkBox);
+      toggleLabel.appendChild(span);
       header.append(title);
-      header.append(toggleWrapper);
+      header.append(toggleLabel);
       this.form.append(header);
       return header;
     }
@@ -238,5 +268,31 @@
     }
   }
 
+  // function renderLinkIcon(path, width, height, node) {
+  //   const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  //   const iconPath = document.createElementNS(
+  //     'http://www.w3.org/2000/svg',
+  //     'path'
+  //   );
+  
+  //   iconSvg.setAttribute('width', `${width}px`);
+  //   iconSvg.setAttribute('height', `${height}px`);
+  //   iconSvg.setAttribute('fill', 'none');
+  //   iconSvg.setAttribute('viewBox', '0 0 24 24');
+  //   iconSvg.setAttribute('stroke', 'black');
+  //   iconSvg.classList.add('post-icon');
+  
+  //   iconPath.setAttribute(
+  //     'd',
+  //     path
+  //   );
+  //   iconPath.setAttribute('stroke-linecap', 'round');
+  //   iconPath.setAttribute('stroke-linejoin', 'round');
+  //   iconPath.setAttribute('stroke-width', '2');
+  
+  //   iconSvg.appendChild(iconPath);
+  
+  //   return node.appendChild(iconSvg);
+  // }
 
 })()

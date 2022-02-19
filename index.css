@@ -34,6 +34,18 @@
 - Family: [Josefin Sans](https://fonts.google.com/specimen/Josefin+Sans)
 - Weights: 400, 700 */
 
+
+@font-face {
+  font-family: 'JosefinSans400';
+  src: url('./assets/Josefin_Sans/static/JosefinSans-Regular.ttf');
+  font-weight: normal;
+}
+@font-face{
+  font-family: 'JosefinSans700';
+  src: url('./assets/Josefin_Sans/static/JosefinSans-Bold.ttf');
+  font-weight: bold;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -42,42 +54,53 @@
 
 html {
   font-size: 18px;
+  height: 100%;
 }
 
 body {
+  width: 100%;
   background-color: rgb(190, 190, 190);
+  display: flex;
+  justify-content: center;
 }
 
 form {
   background-color: rgb(121, 121, 121);
-  width: 50%;
-  height: 100%;
 }
 
 #todo__container {
+  width: 50%;
 }
 
 #todo__container header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  padding: 2em .25em;
+  border-radius: 16px;
 }
 
 #todo__container header h1 {
+  color: white;
+  font-family: "JosefinSans400";
+  letter-spacing: .5em;
 }
 
-#todo__container header svg {
+#todo__container header input[type="checkbox"] {
+  visibility: hidden;
 }
-
 #todo__container .toggleWrapper {
-  width: 100px;
-  height: 50px;
-  background: rgb(219, 112, 112);
+  position: relative;
+}
+#todo__container header .moonImg, 
+#todo__container header .sunImg {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 #todo__container .inputContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
 }
 
@@ -87,15 +110,12 @@ form {
   align-items: center;
 }
 
-form .circle {
+.listContainer {
+  list-style: none;
 }
-form input {
-}
+
 .listItem {
-}
-
-.listTitle {
-}
-
-.listButton {
+  display: flex;
+  justify-content: left;
+  align-items: center;
 }
