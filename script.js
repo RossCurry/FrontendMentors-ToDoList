@@ -35,23 +35,26 @@
       const listItem = document.createElement('ul');
       const doneButton = document.createElement('button');
       const title = document.createElement('div');
+      const circleContainer = document.createElement("div");
+      circleContainer.classList.add("circleContainer");
       // list item
-      listItem.appendChild(doneButton)
-      listItem.appendChild(title)
       listItem.classList.add('listItem');
       // title
       title.textContent = item.title + ': ' + item.status;
       title.classList.add('listTitle');
       //button
       doneButton.classList.add('listButton');
-      doneButton.textContent = item.status;
       // append items
+      circleContainer.appendChild(doneButton);
+      listItem.appendChild(circleContainer)
+      listItem.appendChild(title)
+      
       this.listContainer.appendChild(listItem);
 
       // button
       doneButton.addEventListener('click', (e) => {
         // when clicked change status of item
-        console.log('target', e.target)
+        e.preventDefault();
         item.status = item.status === 'done' ? 'todo' : 'done';
         // update list
         const itemIndex = this.list.indexOf(item);
@@ -59,7 +62,18 @@
         todoListCopy[itemIndex] = item;
         this.list = todoListCopy;
         title.textContent = item.title + ': ' + item.status;
-        console.log('list', this.list)
+        // change button class
+        if (doneButton.classList.contains("listButton")) {
+          console.log("change val to done")
+          doneButton.classList.remove("listButton")
+          doneButton.classList.add("listButtonDone")
+          title.setAttribute("style", "text-decoration-line:line-through");
+        } else {
+          console.log("change val to not done")
+          doneButton.classList.remove("listButtonDone")
+          doneButton.classList.add("listButton")
+          title.setAttribute("style", "text-decoration-line:none");
+        }
       })
     }
 
@@ -114,7 +128,6 @@
       checkBox.addEventListener("change", (e) => {
         console.log(e.target.value);
         if (checkBox.checked) {
-          // moonImg.setAttribute("style", "opacity: 0")
           moonImg.style.opacity = 0;
           sunImg.style.opacity = 1;
         } else {
@@ -151,6 +164,10 @@
       const inputContainer = document.createElement("div");
       const submitBtn = document.createElement("button");
       const textInput = document.createElement("input");
+      const circleContainer = document.createElement("div");
+      const circle = document.createElement("div");
+      circleContainer.classList.add("circleContainer");
+      circle.classList.add("circleGrey");
       inputContainer.classList.add("inputContainer")
 
       // button
@@ -158,6 +175,8 @@
       submitBtn.setAttribute("form", this.form.id);
       submitBtn.name = "addTodoItem";
       submitBtn.textContent = "add";
+      // circle
+
 
       // text input
       textInput.name = "todoInput";
@@ -165,8 +184,23 @@
       textInput.placeholder = "Create a new todo...";
       // append elements
       inputContainer.appendChild(submitBtn);
+      circleContainer.appendChild(circle);
+      inputContainer.appendChild(circleContainer);
       inputContainer.appendChild(textInput);
       this.form.appendChild(inputContainer);
+
+      // eventListeners
+      let inputValue;
+      textInput.addEventListener("keyup", (e) => {
+        inputValue = e.target.value;
+      })
+      submitBtn.addEventListener("click", (e) => {
+        e.preventDefault()
+        if (inputValue) {
+          this.addItem(new ListItem(inputValue, this.list))
+          textInput.value = "";
+        }
+      })
       return inputContainer;
     }
     
