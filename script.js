@@ -47,7 +47,13 @@
       title.textContent = item.title + ': ' + item.status;
       title.classList.add('listTitle');
       //button
-      doneButton.classList.add('listButton');
+      if (item.status === "todo"){
+        doneButton.classList.add('listButton');
+        title.setAttribute("style", "text-decoration-line:none");
+      } else {
+        doneButton.classList.add('listButtonDone');
+        title.setAttribute("style", "text-decoration-line:line-through");
+      }
       // append items
       circleContainer.appendChild(doneButton);
       listItem.appendChild(circleContainer)
@@ -233,12 +239,16 @@
       this.counter = document.createElement("div");
       const filter = document.createElement("div");
       const clearBtn = document.createElement("button");
+      
       // menu classes
       this.counter.classList.add("counter");
       filter.classList.add("filter");
       clearBtn.classList.add("clearBtn");
+      
       // counter
       this.updateRemainingTodos();
+      
+      // Filter Section
       const filterAllLabel = document.createElement("label");
       const filterAll = document.createElement("input");
       filterAll.type = "radio";
@@ -255,7 +265,6 @@
       const filterActive = document.createElement("input");
       filterActive.type = "radio";
       filterActive.name = "filter";
-      filterActive.checked = true;
       filterActive.id = "filterActive"
       filterActive.value = "active"
       filterActiveLabel.setAttribute("for", filterActive.id)
@@ -267,26 +276,36 @@
       const filterCompleted = document.createElement("input");
       filterCompleted.type = "radio";
       filterCompleted.name = "filter";
-      filterCompleted.checked = true;
       filterCompleted.id = "filterCompleted";
       filterCompleted.value = "completed";
       filterCompletedLabel.setAttribute("for", filterCompleted.id)
       filterCompletedLabel.textContent = filterCompleted.value;
       filterCompletedLabel.appendChild(filterCompleted);
       filter.appendChild(filterCompletedLabel);
+      
       // clear button
       clearBtn.type = "button";
       clearBtn.textContent = "Clear completed";
-
-      // eventlistener
+      // eventlisteners
       clearBtn.addEventListener("click", (e) => {
         e.preventDefault();
         this.clearDoneElements();
-        // TODO FIX
-        // const listOfTodos = this.list.filter(todo => todo.status === "todo");
-        // // this.list = listOfTodos;
-        // this.drawList(listOfTodos);
-        // console.log("clearBtn", listOfTodos);
+      })
+      // const radioButtons = filter.getElementsByTagName("input");
+      // for(let radioBtn of radioButtons){
+      //   radioBtn.addEventListener("change", (e)=>{
+      //     e.stopPropagation();
+      //     const selection = e.target.value;
+      //     const checked = e.target.checked;
+      //     console.log("selection", selection, checked)
+      //     if (checked) {
+      //       this.filterList(selection);
+      //     }
+      //   })
+      // }
+      filter.addEventListener("change", (e) => {
+        console.log("filter event", e.target);
+        this.filterList(e.target.value);
       })
 
       // append items
@@ -305,14 +324,35 @@
 
     clearDoneElements(){
       if (this.list.every(el => el.status === "todo")) return;
-      const listElements = this.listContainer.getElementsByTagName("ul");
-      console.log("listElements", listElements)
       this.listContainer.innerHTML = "";
       const listOfTodos = this.list.filter(todo => todo.status === "todo");
       this.list = listOfTodos;
       listOfTodos.forEach(item => this.addItem(item));
-      console.log("list", this.list);
       this.updateRemainingTodos();
+    }
+    filterList(filterSelection){
+      console.log("filterList", filterSelection)
+      switch (filterSelection) {
+        case "all":
+          console.log("Do all")
+          this.listContainer.innerHTML = "";
+          this.list.forEach(item => this.addItem(item));
+          return;
+        case "active":
+          console.log("Do active")
+          this.listContainer.innerHTML = "";
+          this.list.forEach(item => {
+            if (item.status === "todo") this.addItem(item);
+          })
+          return; 
+        case "completed":
+          console.log("Do completed")
+          this.listContainer.innerHTML = "";
+          this.list.forEach(item => {
+            if (item.status === "done") this.addItem(item);
+          })
+          return;
+      }
     }
   }
   // create Todo List
