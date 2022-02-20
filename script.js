@@ -26,12 +26,16 @@
       this.container;
       this.form;
       this.listContainer;
+      this.count;
       this.init(startList);
     }
 
     addItem(item){
-      if (!item.id || !item.title || !item.created ) return;
-      this.list.push(item);
+      if (!item.id || !item.title || !item.created) return;
+      if (this.list.every(prevItem => {
+        return prevItem.id !== item.id;
+      })) this.list.push(item);
+      this.updateRemainingTodos();
       const listItem = document.createElement('ul');
       const doneButton = document.createElement('button');
       const title = document.createElement('div');
@@ -62,14 +66,13 @@
         todoListCopy[itemIndex] = item;
         this.list = todoListCopy;
         title.textContent = item.title + ': ' + item.status;
+        this.updateRemainingTodos();
         // change button class
         if (doneButton.classList.contains("listButton")) {
-          console.log("change val to done")
           doneButton.classList.remove("listButton")
           doneButton.classList.add("listButtonDone")
           title.setAttribute("style", "text-decoration-line:line-through");
         } else {
-          console.log("change val to not done")
           doneButton.classList.remove("listButtonDone")
           doneButton.classList.add("listButton")
           title.setAttribute("style", "text-decoration-line:none");
@@ -100,8 +103,8 @@
 
       // The form
       this.form.setAttribute("id", "todoForm");
-
-      // the form is: header / form input(btn&text) / List / List items / menu for filtering & actions
+      
+      // Draw other elements
       this.drawHeader();
       this.drawFormInput();
       this.drawList(startList);
@@ -214,10 +217,12 @@
       // populate list from constructor
       if (Array.isArray(startList)) {
         startList.forEach(item => {
-          if (typeof item !== "string") return;
-          const newItem = new ListItem(item, this.list)
-          console.log("newItem", newItem);
-          this.addItem(newItem)
+          if (typeof item === "string") {
+            const newItem = new ListItem(item, this.list)
+            this.addItem(newItem)
+          } else if (item.id) {
+            this.addItem(item);
+          }
         })
       }
     }
@@ -225,18 +230,15 @@
     drawMenu(){
       // draw Menu
       const menu = document.createElement("menu");
-      const counter = document.createElement("div");
+      this.counter = document.createElement("div");
       const filter = document.createElement("div");
       const clearBtn = document.createElement("button");
       // menu classes
-      counter.classList.add("counter");
+      this.counter.classList.add("counter");
       filter.classList.add("filter");
       clearBtn.classList.add("clearBtn");
       // counter
-      const count = this.list.length;
-      counter.textContent = `${count} item${count > 1 ? "s" : ""} left`;
-      // filter
-      // all
+      this.updateRemainingTodos();
       const filterAllLabel = document.createElement("label");
       const filterAll = document.createElement("input");
       filterAll.type = "radio";
@@ -276,16 +278,45 @@
       clearBtn.type = "button";
       clearBtn.textContent = "Clear completed";
 
+      // eventlistener
+      clearBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.clearDoneElements();
+        // TODO FIX
+        // const listOfTodos = this.list.filter(todo => todo.status === "todo");
+        // // this.list = listOfTodos;
+        // this.drawList(listOfTodos);
+        // console.log("clearBtn", listOfTodos);
+      })
+
       // append items
-      menu.appendChild(counter);
+      menu.appendChild(this.counter);
       menu.appendChild(filter);
       menu.appendChild(clearBtn);
       this.form.appendChild(menu)
     }
 
+    updateRemainingTodos(){
+      const remainingTodos = this.list.filter(todo => todo.status === "todo").length;
+      if(this.counter) {
+        this.counter.textContent =`${remainingTodos} item${remainingTodos > 1 ? "s" : ""} left`;
+      }
+    }
+
+    clearDoneElements(){
+      if (this.list.every(el => el.status === "todo")) return;
+      const listElements = this.listContainer.getElementsByTagName("ul");
+      console.log("listElements", listElements)
+      this.listContainer.innerHTML = "";
+      const listOfTodos = this.list.filter(todo => todo.status === "todo");
+      this.list = listOfTodos;
+      listOfTodos.forEach(item => this.addItem(item));
+      console.log("list", this.list);
+      this.updateRemainingTodos();
+    }
   }
+  // create Todo List
   const todoList = new TodoList (dummyList);
-  console.log(todoList.getAll())
   
 
   // Helper function
@@ -302,31 +333,5 @@
     }
   }
 
-  // function renderLinkIcon(path, width, height, node) {
-  //   const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  //   const iconPath = document.createElementNS(
-  //     'http://www.w3.org/2000/svg',
-  //     'path'
-  //   );
-  
-  //   iconSvg.setAttribute('width', `${width}px`);
-  //   iconSvg.setAttribute('height', `${height}px`);
-  //   iconSvg.setAttribute('fill', 'none');
-  //   iconSvg.setAttribute('viewBox', '0 0 24 24');
-  //   iconSvg.setAttribute('stroke', 'black');
-  //   iconSvg.classList.add('post-icon');
-  
-  //   iconPath.setAttribute(
-  //     'd',
-  //     path
-  //   );
-  //   iconPath.setAttribute('stroke-linecap', 'round');
-  //   iconPath.setAttribute('stroke-linejoin', 'round');
-  //   iconPath.setAttribute('stroke-width', '2');
-  
-  //   iconSvg.appendChild(iconPath);
-  
-  //   return node.appendChild(iconSvg);
-  // }
 
 })()
