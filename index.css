@@ -67,13 +67,17 @@ html {
 
 body {
   width: 100%;
-  background-color: rgb(190, 190, 190);
+  /* background-color: rgb(190, 190, 190); */
   display: flex;
   justify-content: center;
+  background-image: url(assets/images/bg-desktop-light.jpg);
+  background-position: top;
+  background-repeat: no-repeat;
 }
 
 form {
-  background-color: rgb(121, 121, 121);
+  /* background-color: rgb(121, 121, 121); */
+  margin-top: 3.5rem;
 }
 
 #todo__container {
@@ -141,6 +145,10 @@ form {
   border-radius: 0 8px 8px 0;
 }
 
+#todo__container .listContainer, 
+#todo__container menu {
+  box-shadow: 0 6px 15px rgba(92, 87, 94, 0.267);
+}
 #todo__container .listContainer {
   list-style: none;
   border-radius: 6px;
@@ -187,4 +195,23 @@ form {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 14px;
+  padding: 1.25em 1em;
+  background-color: white;
+  border-radius: 0 0 6px 6px;
+}
+
+#todo__container menu .filter input[type="radio"] {
+  visibility: hidden;
+}
+#todo__container menu .filter label {
+  text-transform: capitalize;
+  cursor: pointer;
+}
+#todo__container menu button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: "JosefinSans400";
 }

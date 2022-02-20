@@ -44,7 +44,7 @@
       // list item
       listItem.classList.add('listItem');
       // title
-      title.textContent = item.title + ': ' + item.status;
+      title.textContent = item.title;
       title.classList.add('listTitle');
       //button
       if (item.status === "todo"){
@@ -71,7 +71,7 @@
         const todoListCopy = [...this.list];
         todoListCopy[itemIndex] = item;
         this.list = todoListCopy;
-        title.textContent = item.title + ': ' + item.status;
+        title.textContent = item.title;
         this.updateRemainingTodos();
         // change button class
         if (doneButton.classList.contains("listButton")) {
@@ -104,7 +104,6 @@
       this.container = document.getElementById("todo__container");
       // add form & append
       this.form = document.createElement("form");
-      this.container.textContent = "container";
       this.container.append(this.form);
 
       // The form
@@ -135,7 +134,6 @@
       checkBox.type = "checkbox";
       checkBox.value = "night";
       checkBox.addEventListener("change", (e) => {
-        console.log(e.target.value);
         if (checkBox.checked) {
           moonImg.style.opacity = 0;
           sunImg.style.opacity = 1;
@@ -258,6 +256,7 @@
       filterAll.value = "all"
       filterAllLabel.setAttribute("for", filterAll.id)
       filterAllLabel.textContent = filterAll.value;
+      filterAllLabel.style.color = "blue";
       filterAllLabel.appendChild(filterAll);
       filter.appendChild(filterAllLabel);
       // active
@@ -290,22 +289,22 @@
       clearBtn.addEventListener("click", (e) => {
         e.preventDefault();
         this.clearDoneElements();
+        // TODO reset checked value with color
+        filterAll.checked = true;
+        filterAllLabel.style.color = "blue";
+        filterCompletedLabel.style.color = "darkGrey";
       })
-      // const radioButtons = filter.getElementsByTagName("input");
-      // for(let radioBtn of radioButtons){
-      //   radioBtn.addEventListener("change", (e)=>{
-      //     e.stopPropagation();
-      //     const selection = e.target.value;
-      //     const checked = e.target.checked;
-      //     console.log("selection", selection, checked)
-      //     if (checked) {
-      //       this.filterList(selection);
-      //     }
-      //   })
-      // }
       filter.addEventListener("change", (e) => {
-        console.log("filter event", e.target);
         this.filterList(e.target.value);
+        const labels = filter.getElementsByTagName("label");
+        for (let label of labels){
+          if (label.getAttribute("for") === e.target.id){
+            // TODO set proper colors
+            label.style.color = "blue"
+          } else {
+            label.style.color = "darkGrey"
+          }
+        }
       })
 
       // append items
@@ -331,22 +330,18 @@
       this.updateRemainingTodos();
     }
     filterList(filterSelection){
-      console.log("filterList", filterSelection)
       switch (filterSelection) {
         case "all":
-          console.log("Do all")
           this.listContainer.innerHTML = "";
           this.list.forEach(item => this.addItem(item));
           return;
         case "active":
-          console.log("Do active")
           this.listContainer.innerHTML = "";
           this.list.forEach(item => {
             if (item.status === "todo") this.addItem(item);
           })
           return; 
         case "completed":
-          console.log("Do completed")
           this.listContainer.innerHTML = "";
           this.list.forEach(item => {
             if (item.status === "done") this.addItem(item);
