@@ -8,7 +8,8 @@
     "Pick up groceries",
     "Complete Todo App on Frontend Mentor",
   ]
-  let darkMode = false;
+  // const body = document.getElementsByTagName("body")[0];
+  // body.classList.add("lightMode");
 
 
   class ListItem {
@@ -17,6 +18,7 @@
       this.title = title;
       this.created = new Date();
       this.status = 'todo';
+      this.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
   }
 
@@ -26,6 +28,7 @@
       this.container;
       this.form;
       this.listContainer;
+      this.menu;
       this.count;
       this.init(startList);
     }
@@ -141,8 +144,14 @@
           moonImg.style.opacity = 1;
           sunImg.style.opacity = 0;
         }
-        darkMode = !darkMode;
-        console.log("darkMode", darkMode)
+        // DarkMode
+        this.darkMode = !this.darkMode;
+        document.body.classList.toggle("darkMode");
+        this.container.classList.toggle("darkMode");
+        // this.form.classList.toggle("darkMode");
+        this.listContainer.classList.toggle("darkMode");
+        this.menu.classList.toggle("darkMode");
+        console.log("darkMode", this.darkMode)
       })
       
       // SVG
@@ -233,11 +242,11 @@
     
     drawMenu(){
       // draw Menu
-      const menu = document.createElement("menu");
+      this.menu = document.createElement("menu");
       this.counter = document.createElement("div");
       const filter = document.createElement("div");
       const clearBtn = document.createElement("button");
-      
+      const selectBlue = getComputedStyle(document.documentElement).getPropertyValue("--selectedTextBlue")
       // menu classes
       this.counter.classList.add("counter");
       filter.classList.add("filter");
@@ -256,7 +265,7 @@
       filterAll.value = "all"
       filterAllLabel.setAttribute("for", filterAll.id)
       filterAllLabel.textContent = filterAll.value;
-      filterAllLabel.style.color = "blue";
+      filterAllLabel.style.color = selectBlue;
       filterAllLabel.appendChild(filterAll);
       filter.appendChild(filterAllLabel);
       // active
@@ -291,8 +300,8 @@
         this.clearDoneElements();
         // TODO reset checked value with color
         filterAll.checked = true;
-        filterAllLabel.style.color = "blue";
-        filterCompletedLabel.style.color = "darkGrey";
+        filterAllLabel.style.color = selectBlue;
+        filterCompletedLabel.style.color = "grey";
       })
       filter.addEventListener("change", (e) => {
         this.filterList(e.target.value);
@@ -300,18 +309,18 @@
         for (let label of labels){
           if (label.getAttribute("for") === e.target.id){
             // TODO set proper colors
-            label.style.color = "blue"
+            label.style.color = selectBlue
           } else {
-            label.style.color = "darkGrey"
+            label.style.color = "grey"
           }
         }
       })
 
       // append items
-      menu.appendChild(this.counter);
-      menu.appendChild(filter);
-      menu.appendChild(clearBtn);
-      this.form.appendChild(menu)
+      this.menu.appendChild(this.counter);
+      this.menu.appendChild(filter);
+      this.menu.appendChild(clearBtn);
+      this.form.appendChild(this.menu)
     }
 
     updateRemainingTodos(){
