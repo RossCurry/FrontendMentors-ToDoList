@@ -110,6 +110,7 @@ form {
   /* position: sticky;
   top: 0; */
 }
+
 #todo__container header h1 {
   color: white;
   font-family: 'JosefinSans400';
@@ -311,13 +312,31 @@ form {
 
 /* Preferences */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   body {
-    background-image: url(assets/images/bg-desktop-dark.jpg);
+    background-image:  url(assets/images/bg-desktop-dark.jpg);
+    background-color: var(--DarkBg);
+  }
+  #todo__container .inputContainer {
+    background-color: var(--VeryDarkGrayishBlue);
+    color: var(--LightGrayishBlue);
+  }
+  #todo__container .listContainer,
+  #todo__container menu {
+    box-shadow: 0 10px 15px  rgb(0, 0, 0);
+  }
+  #todo__container .listContainer {
+    background-color: var(--VeryDarkGrayishBlue);
+    color: var(--LightGrayishBlue);
+  }
+  #todo__container menu {
+    background-color: var(--VeryDarkGrayishBlue);
+    color: var(--LightGrayishBlue);
   }
 }
+
 @media (prefers-color-scheme: light) {
   body {
     background-image: url(assets/images/bg-desktop-light.jpg);
   }
-}
+} */
