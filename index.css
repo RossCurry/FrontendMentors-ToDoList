@@ -51,6 +51,9 @@
   --VeryDarkGrayishBlue: hsl(233, 14%, 35%);
   --VeryVeryDarkGrayishBlue: hsl(237, 14%, 26%);
   --DarkBg: #15151F;
+  /* transitionTime */
+  --ShortTransTime: 250ms;
+  --LongTransTime: 600ms;
 }
 
 @font-face {
@@ -84,7 +87,7 @@ body {
   background-image:  url(assets/images/bg-desktop-light.jpg);
   background-position: top;
   background-repeat: no-repeat;
-  transition: background-image 200ms ease-in-out, background-color 200ms ease-in-out;
+  transition: background-image var(--ShortTransTime) ease-in-out, background-color var(--ShortTransTime) ease-in-out;
 }
 body.darkMode {
   background-image:  url(assets/images/bg-desktop-dark.jpg);
@@ -98,7 +101,7 @@ form {
 
 #todo__container {
   width: 50%;
-  transition: width 300ms ease-in-out;
+  transition: width var(--LongTransTime) ease-in-out;
 }
 
 /* HEADER */
@@ -144,7 +147,7 @@ form {
   margin-bottom: 1rem;
   /* position: sticky;
   top: 100px; */
-  transition: background-color 200ms ease-in-out;
+  transition: background-color var(--ShortTransTime) ease-in-out;
 }
 #todo__container.darkMode .inputContainer {
   background-color: var(--VeryDarkGrayishBlue);
@@ -180,7 +183,7 @@ form {
 #todo__container .listContainer,
 #todo__container menu {
   box-shadow: 0 6px 15px rgba(92, 87, 94, 0.267);
-  transition: box-shadow 200ms ease-in-out;
+  transition: box-shadow var(--ShortTransTime) ease-in-out;
 }
 #todo__container.darkMode .listContainer,
 #todo__container.darkMode menu {
@@ -189,10 +192,10 @@ form {
 #todo__container .listContainer {
   list-style: none;
   border-radius: 6px;
-  transition: height 300ms ease-in-out;
+  transition: height var(--ShortTransTime) ease-in-out;
   background-color: white;
   color: var(--DarkGrayishBlue);
-  transition: background-color 200ms ease-in-out;
+  transition: background-color var(--ShortTransTime) ease-in-out;
 }
 #todo__container .listContainer.darkMode {
   background-color: var(--VeryDarkGrayishBlue);
@@ -205,12 +208,63 @@ form {
   display: flex;
   justify-content: left;
   align-items: center;
-  background-color: inherit;
+  /* background-color: inherit; */
   width: 100%;
-  height: 60px;
+  min-height: 60px;
   border-bottom: 2px solid grey;
   color: inherit;
+  cursor: grab;
+  opacity: 1;
+  transition: opacity 150ms;
+  /* transition: background-color 300ms ease-in-out; */
+  overflow: scroll;
 }
+#todo__container .listItem .listTitle {
+  overflow: hidden;
+  white-space:pre-wrap;
+  line-height: 1.5em;
+  padding: .3em 0;
+  /* text-overflow: ellipsis; */
+}
+#todo__container .listItem .listTitle::-webkit-scrollbar { 
+  width: 0;
+}
+
+/* Dragging styles  */
+#todo__container .listItem.dragStart,
+#todo__container .listItem.darkMode.dragStart {
+  color: white;
+  border: none;
+}
+#todo__container .listItem.drag {
+
+}
+
+#todo__container .listItem.drag:active {
+  cursor: grabbing;
+  border-radius: 12px;
+}
+#todo__container .listItem.dragStart {
+  background-color: rgba(124, 141, 235, 0.89);
+}
+#todo__container .listItem.darkMode.dragStart {
+  background-color: rgba(91, 42, 216, 0.781);
+}
+#todo__container .listItem.dragStart button {
+  border-color: white;
+}
+#todo__container .listItem.drag {
+  /* display: none; */
+  opacity: 0.1;
+}
+#todo__container .listItem.dragEnd {
+  /* background-color: rgba(91, 42, 216, 0.781); */
+  /* display: none; */
+}
+#todo__container .listItem.dragging button {
+  /* display: none; */
+}
+
 #todo__container .listButton {
   --circleDiameter: 20px;
   content: 'circle';
@@ -245,7 +299,7 @@ form {
   padding: 1.25em 1em;
   background-color: white;
   border-radius: 0 0 6px 6px;
-  transition: background-color 200ms ease-in-out;
+  transition: background-color var(--ShortTransTime) ease-in-out;
   color: grey;
 }
 #todo__container.darkMode menu {
@@ -268,6 +322,9 @@ form {
   text-transform: capitalize;
   cursor: pointer;
   color: inherit;
+}
+#todo__container menu .filter input:active ~ label {
+  color: #AD71F2;
 }
 #todo__container menu button {
   background: none;

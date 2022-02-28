@@ -16,6 +16,7 @@
       this.title = title;
       this.created = new Date();
       this.status = 'todo';
+      this.finished;
     }
   }
 
@@ -38,16 +39,21 @@
         this.list.every((prevItem) => {
           return prevItem.id !== item.id;
         })
-      )
+      ) {
         this.list.push(item);
+      }
       this.updateRemainingTodos();
+      // DOM
       const listItem = document.createElement('ul');
       const doneButton = document.createElement('button');
       const title = document.createElement('div');
       const circleContainer = document.createElement('div');
       circleContainer.classList.add('circleContainer');
       // list item
+      listItem.id = item.id;
       listItem.classList.add('listItem');
+      listItem.setAttribute("draggable", true)
+
       // title
       title.textContent = item.title;
       title.classList.add('listTitle');
@@ -66,11 +72,16 @@
 
       this.listContainer.appendChild(listItem);
 
-      // button
+      // EventListeners
       doneButton.addEventListener('click', (e) => {
         // when clicked change status of item
         e.preventDefault();
         item.status = item.status === 'done' ? 'todo' : 'done';
+        if (item.status === "done"){
+          item.finished = new Date();
+        } else {
+          item.finished = undefined;
+        }
         // update list
         const itemIndex = this.list.indexOf(item);
         const todoListCopy = [...this.list];
@@ -78,6 +89,10 @@
         this.list = todoListCopy;
         title.textContent = item.title;
         this.updateRemainingTodos();
+        const filterSelection = this.menu.getElementsByTagName("input");
+        for (let filterEl of filterSelection){
+          if (filterEl.checked) this.filterList(filterEl.value);
+        }
         // change button class
         if (doneButton.classList.contains('listButton')) {
           doneButton.classList.remove('listButton');
@@ -89,6 +104,24 @@
           title.setAttribute('style', 'text-decoration-line:none');
         }
       });
+      listItem.addEventListener("dragstart", dragStart)
+      listItem.addEventListener("drag", drag)
+      listItem.addEventListener("dragend", dragEnd)
+      // listItem.addEventListener("dragstart", dragStart)
+      function dragStart(e) {
+        const itemObj = JSON.stringify(item)
+        e.dataTransfer.setData('text/plain', itemObj);
+        e.target.classList.add('dragStart');
+      }
+      function drag(e) {
+        e.target.classList.add('drag');
+      }
+      function dragEnd(e) {
+        console.log("dragEnd", e.target.id);
+        e.target.classList.remove('drag');
+        e.target.classList.remove('dragStart');
+        e.target.classList.remove('dragEnd');
+      }
     }
 
     getAll() {
@@ -165,16 +198,19 @@
 
     toggleDarkMode(){
       console.log("listContainer", this.listContainer)
+      const todoItems = this.listContainer.querySelectorAll(".listItem");
       if (this.isDarkModePref()){
         document.body.classList.add('darkMode');
         this.container.classList.add('darkMode');
         this.listContainer.classList.add('darkMode');
         this.menu.classList.add('darkMode');
+        todoItems.forEach(item => item.classList.add('darkMode'))
       } else {
         document.body.classList.remove('darkMode');
         this.container.classList.remove('darkMode');
         this.listContainer.classList.remove('darkMode');
         this.menu.classList.remove('darkMode');
+        todoItems.forEach(item => item.classList.remove('darkMode'))
       }
     }
 
@@ -363,14 +399,6 @@
       clearBtn.type = 'button';
       clearBtn.textContent = 'Clear completed';
       // eventlisteners
-      clearBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.clearDoneElements();
-        filterAll.checked = true;
-        filterAllLabel.style.color = selectBlue;
-        filterActiveLabel.style.color = 'grey';
-        filterCompletedLabel.style.color = 'grey';
-      });
       filter.addEventListener('change', (e) => {
         this.filterList(e.target.value);
         const labels = filter.getElementsByTagName('label');
@@ -382,6 +410,16 @@
             label.style.color = 'grey';
           }
         }
+      });
+      clearBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log("clearBtn")
+        this.clearDoneElements();
+        this.filterList("all");
+        filterAll.checked = true;
+        filterAllLabel.style.color = selectBlue;
+        filterActiveLabel.style.color = 'grey';
+        filterCompletedLabel.style.color = 'grey';
       });
       
 
@@ -397,17 +435,32 @@
         .length;
       if (this.counter) {
         this.counter.textContent = `${remainingTodos} item${
-          remainingTodos > 1 ? 's' : ''
+          remainingTodos === 1 ? '' : 's'
         } left`;
       }
     }
 
     clearDoneElements() {
       if (this.list.every((el) => el.status === 'todo')) return;
-      this.listContainer.innerHTML = '';
-      const listOfTodos = this.list.filter((todo) => todo.status === 'todo');
-      this.list = listOfTodos;
-      listOfTodos.forEach((item) => this.addItem(item));
+      console.log("clearDoneElements")
+      const completedTodos = this.list.filter((todo) => todo.status === 'done');
+      const allListElements = this.listContainer.getElementsByTagName("ul");
+      for (let listEl of allListElements){
+        const curTitle = listEl.getElementsByClassName("listTitle")[0];
+        console.log("curTitle", curTitle)
+        for (let todo of completedTodos){
+          if (curTitle.textContent === todo.title){
+            console.log("remove el", curTitle.textContent)
+            listEl.remove();
+          }
+        }
+        // listEl.remove();
+      }
+      
+      // const listOfTodos = this.list.filter((todo) => todo.status === 'todo');
+      // this.listContainer.innerHTML = '';
+      // this.list = listOfTodos;
+      // listOfTodos.forEach((item) => this.addItem(item));
       this.updateRemainingTodos();
     }
     filterList(filterSelection) {
