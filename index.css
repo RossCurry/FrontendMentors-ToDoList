@@ -239,6 +239,9 @@ form {
 #todo__container .listItem.drag {
 
 }
+/* #todo__container .listItem:-moz-drag-over {
+  outline: 4px solid rgb(161, 56, 56);
+}  */
 
 #todo__container .listItem.drag:active {
   cursor: grabbing;

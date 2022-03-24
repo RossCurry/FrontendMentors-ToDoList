@@ -17,6 +17,7 @@
       this.created = new Date();
       this.status = 'todo';
       this.finished;
+      this.indexInList = currentList.length;
     }
   }
 
@@ -30,6 +31,7 @@
       this.toggleLabel;
       this.count;
       this.darkMode = this.isDarkModePref();
+      this.draggedItem;
       this.init(startList);
     }
 
@@ -44,7 +46,7 @@
       }
       this.updateRemainingTodos();
       // DOM
-      const listItem = document.createElement('ul');
+      const listItem = document.createElement('li');
       const doneButton = document.createElement('button');
       const title = document.createElement('div');
       const circleContainer = document.createElement('div');
@@ -104,23 +106,86 @@
           title.setAttribute('style', 'text-decoration-line:none');
         }
       });
+      // start to drag
       listItem.addEventListener("dragstart", dragStart)
+      // While you drag
       listItem.addEventListener("drag", drag)
+      // Let go of the drag
       listItem.addEventListener("dragend", dragEnd)
+
+      // Target objects react to elements being dragged
+      listItem.addEventListener("dragenter", dragEnter)
+      listItem.addEventListener("dragover", dragOver)
+      listItem.addEventListener("dragleave", dragLeave)
+      listItem.addEventListener("drop", drop)
+
       // listItem.addEventListener("dragstart", dragStart)
       function dragStart(e) {
+        // drag data, (dataTransfer)
+        // feedback image,
+        // drag effects,
+        // event.dataTransfer.setDragImage(image, xOffset, yOffset); // img or canvas
+        const innerHTML = e.target.innerHTML;
         const itemObj = JSON.stringify(item)
-        e.dataTransfer.setData('text/plain', itemObj);
+        e.dataTransfer.setData('text/plain', innerHTML);
+        e.dataTransfer.setData('application/json', itemObj);
+        e.dataTransfer.effectAllowed = "all";
         e.target.classList.add('dragStart');
       }
       function drag(e) {
         e.target.classList.add('drag');
+        this.draggedItem = e.target;
       }
       function dragEnd(e) {
         console.log("dragEnd", e.target.id);
+        // console.log('itemStored -> ', e.dataTransfer.getData('text/plain'));
+        // const data = e.dataTransfer.getData('text/plain')
+        // const item = JSON.parse(data);
+        // console.log('data -> ', data);
         e.target.classList.remove('drag');
         e.target.classList.remove('dragStart');
         e.target.classList.remove('dragEnd');
+      }
+      // DROP TARGETS
+      // preventDegfault on dragEnter & dragOver
+      function dragEnter(e) {
+        const isJson = e.dataTransfer.types.includes("application/json");
+        if (isJson) e.preventDefault(); // Drop is allowed - also for dragOver
+        console.log('dragenter', e.target.id);
+      }
+      function dragOver(e) {
+        const isJson = e.dataTransfer.types.includes("application/json");
+        if (isJson) e.preventDefault(); // Drop is allowed - also for dragEnter
+        // console.log('dragOver', e.target.id);
+        // swap this dragOver target with the drag target in the HTML collection
+        
+      }
+      function drop(e) {
+        console.log('drop', e.target.id);
+        const targetElement = e.target;
+        e.dataTransfer.dropEffect = "copy";
+        e.dataTransfer.dropEffect = "move";
+        const dataJson = e.dataTransfer.getData('application/json')
+        const dataHTML = e.dataTransfer.getData('text/plain')
+        dataJson && console.log('data -> ', JSON.parse(dataJson));
+        dataHTML && console.log('data -> ', dataHTML);
+        const data = JSON.parse(dataJson);
+        // DOM MANIPULATION
+        const replaceElement = document.createElement("li");
+        replaceElement.innerHTML = dataHTML;
+        replaceElement.id = data.id;
+        replaceElement.classList.add("listItem");
+        replaceElement.setAttribute("draggable", true);
+        console.log('replaceElement -> ', replaceElement);
+        const item = JSON.parse(dataJson);
+        const list = document.querySelector(".listContainer");
+        // DOM INSERTION
+        console.log('this.listContainer -> ', list);
+        list.replaceChild(replaceElement, targetElement)
+        
+      }
+      function dragLeave(e) {
+        console.log('dragLeave', e.target.id);
       }
     }
 
@@ -166,7 +231,6 @@
      * and sets that in storage.
      */
     setSysPref(theme) {
-      console.log('setSysPref', theme);
       // Is there an argument?
       // No Argument
       if (!theme) {
@@ -191,13 +255,11 @@
 
     isDarkModePref() {
       const theme = localStorage.getItem('lightDarkTheme');
-      console.log("THeme from storage is: ", theme)
       if (theme === 'dark') return true;
       return false;
     }
 
     toggleDarkMode(){
-      console.log("listContainer", this.listContainer)
       const todoItems = this.listContainer.querySelectorAll(".listItem");
       if (this.isDarkModePref()){
         document.body.classList.add('darkMode');
@@ -236,12 +298,10 @@
         this.darkMode = !this.darkMode;
         if (this.darkMode) {
           this.setSysPref('dark');
-          console.log('show sun / dark mode is: ', this.darkMode);
           moonImg.style.opacity = 0;
           sunImg.style.opacity = 1;
         } else {
           // this.darkMode = !this.darkMode;
-          console.log('show moon / dark mode is: ', this.darkMode);
           this.setSysPref('light');
           moonImg.style.opacity = 1;
           sunImg.style.opacity = 0;
@@ -249,7 +309,6 @@
         // DarkMode
         // this.darkMode = !this.darkMode;
         this.toggleDarkMode();
-        console.log('darkMode', this.darkMode);
       });
 
       // SVG
@@ -263,7 +322,6 @@
       
       // Opactiy according to darkMode
       this.darkMode = this.isDarkModePref();
-      console.log("isDarkModePref", this.isDarkModePref())
       moonImg.style.opacity = this.darkMode ? 0 : 1;
       sunImg.style.opacity = this.darkMode ? 1 : 0;
 
@@ -324,7 +382,7 @@
 
     drawList(startList) {
       // list container
-      this.listContainer = document.createElement('li');
+      this.listContainer = document.createElement('ul');
       this.listContainer.classList.add('listContainer');
       // append elements
       this.form.appendChild(this.listContainer);
@@ -411,6 +469,7 @@
           }
         }
       });
+      // TODO fix clearAll btn
       clearBtn.addEventListener('click', (e) => {
         e.preventDefault();
         console.log("clearBtn")
@@ -442,15 +501,12 @@
 
     clearDoneElements() {
       if (this.list.every((el) => el.status === 'todo')) return;
-      console.log("clearDoneElements")
       const completedTodos = this.list.filter((todo) => todo.status === 'done');
-      const allListElements = this.listContainer.getElementsByTagName("ul");
+      const allListElements = this.listContainer.getElementsByTagName("li");
       for (let listEl of allListElements){
         const curTitle = listEl.getElementsByClassName("listTitle")[0];
-        console.log("curTitle", curTitle)
         for (let todo of completedTodos){
           if (curTitle.textContent === todo.title){
-            console.log("remove el", curTitle.textContent)
             listEl.remove();
           }
         }
