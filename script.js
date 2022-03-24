@@ -45,6 +45,11 @@
         this.list.push(item);
       }
       this.updateRemainingTodos();
+      const listItem = this.createListElement(item);
+      this.listContainer.appendChild(listItem);
+    }
+
+    createListElement(itemInfo){
       // DOM
       const listItem = document.createElement('li');
       const doneButton = document.createElement('button');
@@ -52,15 +57,15 @@
       const circleContainer = document.createElement('div');
       circleContainer.classList.add('circleContainer');
       // list item
-      listItem.id = item.id;
+      listItem.id = itemInfo.id;
       listItem.classList.add('listItem');
       listItem.setAttribute("draggable", true)
 
       // title
-      title.textContent = item.title;
+      title.textContent = itemInfo.title;
       title.classList.add('listTitle');
       //button
-      if (item.status === 'todo') {
+      if (itemInfo.status === 'todo') {
         doneButton.classList.add('listButton');
         title.setAttribute('style', 'text-decoration-line:none');
       } else {
@@ -72,24 +77,24 @@
       listItem.appendChild(circleContainer);
       listItem.appendChild(title);
 
-      this.listContainer.appendChild(listItem);
+      // this.listContainer.appendChild(listItem);
 
       // EventListeners
       doneButton.addEventListener('click', (e) => {
         // when clicked change status of item
         e.preventDefault();
-        item.status = item.status === 'done' ? 'todo' : 'done';
-        if (item.status === "done"){
-          item.finished = new Date();
+        itemInfo.status = itemInfo.status === 'done' ? 'todo' : 'done';
+        if (itemInfo.status === "done"){
+          itemInfo.finished = new Date();
         } else {
-          item.finished = undefined;
+          itemInfo.finished = undefined;
         }
         // update list
-        const itemIndex = this.list.indexOf(item);
+        const itemIndex = this.list.indexOf(itemInfo);
         const todoListCopy = [...this.list];
-        todoListCopy[itemIndex] = item;
+        todoListCopy[itemIndex] = itemInfo;
         this.list = todoListCopy;
-        title.textContent = item.title;
+        title.textContent = itemInfo.title;
         this.updateRemainingTodos();
         const filterSelection = this.menu.getElementsByTagName("input");
         for (let filterEl of filterSelection){
@@ -126,7 +131,7 @@
         // drag effects,
         // event.dataTransfer.setDragImage(image, xOffset, yOffset); // img or canvas
         const innerHTML = e.target.innerHTML;
-        const itemObj = JSON.stringify(item)
+        const itemObj = JSON.stringify(itemInfo)
         e.dataTransfer.setData('text/plain', innerHTML);
         e.dataTransfer.setData('application/json', itemObj);
         e.dataTransfer.effectAllowed = "all";
@@ -177,16 +182,18 @@
         replaceElement.classList.add("listItem");
         replaceElement.setAttribute("draggable", true);
         console.log('replaceElement -> ', replaceElement);
-        const item = JSON.parse(dataJson);
+        // const item = JSON.parse(dataJson);
         const list = document.querySelector(".listContainer");
         // DOM INSERTION
         console.log('this.listContainer -> ', list);
-        list.replaceChild(replaceElement, targetElement)
+        // list.replaceChild(replaceElement, targetElement)
+        list.insertBefore(replaceElement, targetElement)
         
       }
       function dragLeave(e) {
         console.log('dragLeave', e.target.id);
       }
+      return listItem;
     }
 
     getAll() {
@@ -469,12 +476,11 @@
           }
         }
       });
-      // TODO fix clearAll btn
       clearBtn.addEventListener('click', (e) => {
         e.preventDefault();
         console.log("clearBtn")
         this.clearDoneElements();
-        this.filterList("all");
+        // this.filterList("all");
         filterAll.checked = true;
         filterAllLabel.style.color = selectBlue;
         filterActiveLabel.style.color = 'grey';
@@ -501,41 +507,45 @@
 
     clearDoneElements() {
       if (this.list.every((el) => el.status === 'todo')) return;
-      const completedTodos = this.list.filter((todo) => todo.status === 'done');
-      const allListElements = this.listContainer.getElementsByTagName("li");
-      for (let listEl of allListElements){
-        const curTitle = listEl.getElementsByClassName("listTitle")[0];
-        for (let todo of completedTodos){
-          if (curTitle.textContent === todo.title){
-            listEl.remove();
-          }
-        }
-        // listEl.remove();
-      }
-      
-      // const listOfTodos = this.list.filter((todo) => todo.status === 'todo');
-      // this.listContainer.innerHTML = '';
-      // this.list = listOfTodos;
-      // listOfTodos.forEach((item) => this.addItem(item));
+      const completedTodosIds = this.list.filter((todo) => todo.status === 'done').map(todo => todo.id);
+      completedTodosIds.forEach( id => {
+        const element = document.getElementById(`${id}`);
+        element.remove();
+      })
+      this.list = this.list.filter((todo) => todo.status === 'todo');
       this.updateRemainingTodos();
     }
+    
     filterList(filterSelection) {
+      const allIds = this.list.map(item => item.id);
+      const activeIdList = this.list.filter(item => item.status === "todo").map(item => item.id);
+      const completedIdList = this.list.filter(item => item.status === "done").map(item => item.id);
       switch (filterSelection) {
         case 'all':
-          this.listContainer.innerHTML = '';
-          this.list.forEach((item) => this.addItem(item));
+          allIds.forEach(id => {
+            const element = document.getElementById(`${id}`);
+            element.style.display = "flex"
+          })
           return;
         case 'active':
-          this.listContainer.innerHTML = '';
-          this.list.forEach((item) => {
-            if (item.status === 'todo') this.addItem(item);
-          });
+          activeIdList.forEach(id => {
+            const element = document.getElementById(`${id}`);
+            element.style.display = "flex"
+          })
+          completedIdList.forEach(id => {
+            const element = document.getElementById(`${id}`);
+            element.style.display = "none"
+          })
           return;
         case 'completed':
-          this.listContainer.innerHTML = '';
-          this.list.forEach((item) => {
-            if (item.status === 'done') this.addItem(item);
-          });
+          activeIdList.forEach(id => {
+            const element = document.getElementById(`${id}`);
+            element.style.display = "none"
+          })
+          completedIdList.forEach(id => {
+            const element = document.getElementById(`${id}`);
+            element.style.display = "flex"
+          })
           return;
       }
     }
