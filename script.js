@@ -60,6 +60,7 @@
       listItem.id = itemInfo.id;
       listItem.classList.add('listItem');
       listItem.setAttribute("draggable", true)
+      listItem.setAttribute("data-index", itemInfo.indexInList)
 
       // title
       title.textContent = itemInfo.title;
@@ -76,8 +77,6 @@
       circleContainer.appendChild(doneButton);
       listItem.appendChild(circleContainer);
       listItem.appendChild(title);
-
-      // this.listContainer.appendChild(listItem);
 
       // EventListeners
       doneButton.addEventListener('click', (e) => {
@@ -142,7 +141,7 @@
         this.draggedItem = e.target;
       }
       function dragEnd(e) {
-        console.log("dragEnd", e.target.id);
+        // console.log("dragEnd", e.target.id);
         // console.log('itemStored -> ', e.dataTransfer.getData('text/plain'));
         // const data = e.dataTransfer.getData('text/plain')
         // const item = JSON.parse(data);
@@ -155,8 +154,9 @@
       // preventDegfault on dragEnter & dragOver
       function dragEnter(e) {
         const isJson = e.dataTransfer.types.includes("application/json");
-        if (isJson) e.preventDefault(); // Drop is allowed - also for dragOver
-        console.log('dragenter', e.target.id);
+        // if (isJson) e.preventDefault(); // Drop is allowed - also for dragOver
+        // console.log('dragenter', e.target.id);
+        e.target.classList.add("dragOver")
       }
       function dragOver(e) {
         const isJson = e.dataTransfer.types.includes("application/json");
@@ -165,8 +165,8 @@
         // swap this dragOver target with the drag target in the HTML collection
         
       }
-      function drop(e) {
-        console.log('drop', e.target.id);
+      function drop(e){
+        e.target.classList.remove("dragOver")
         const targetElement = e.target;
         e.dataTransfer.dropEffect = "copy";
         e.dataTransfer.dropEffect = "move";
@@ -176,22 +176,25 @@
         dataHTML && console.log('data -> ', dataHTML);
         const data = JSON.parse(dataJson);
         // DOM MANIPULATION
-        const replaceElement = document.createElement("li");
-        replaceElement.innerHTML = dataHTML;
-        replaceElement.id = data.id;
-        replaceElement.classList.add("listItem");
-        replaceElement.setAttribute("draggable", true);
-        console.log('replaceElement -> ', replaceElement);
-        // const item = JSON.parse(dataJson);
-        const list = document.querySelector(".listContainer");
-        // DOM INSERTION
-        console.log('this.listContainer -> ', list);
-        // list.replaceChild(replaceElement, targetElement)
-        list.insertBefore(replaceElement, targetElement)
-        
+        const listAllElements = document.querySelector(".listContainer").querySelectorAll("li");
+        const listArr = Array.from(listAllElements);
+        const target = document.getElementById(`${e.target.id}`)
+        const source = document.getElementById(`${data.id}`)
+        const targetInx = listArr.indexOf(target);
+        const sourceInx = listArr.indexOf(source);
+        // Swapping
+          // dragged from below
+        if (sourceInx > targetInx){ 
+          target.parentElement.insertBefore(source, target)
+          // if dragged from above
+        } else {
+          const newTargetEl = listArr[targetInx+1];
+          target.parentElement.insertBefore(source, newTargetEl)
+        }
       }
       function dragLeave(e) {
-        console.log('dragLeave', e.target.id);
+        // console.log('dragLeave', e.target.id);
+        e.target.classList.remove("dragOver")
       }
       return listItem;
     }
