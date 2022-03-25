@@ -184,6 +184,11 @@ form {
   color: inherit;
 }
 
+#todo__container .listContainer #noItems {
+  display: flex;
+  justify-content: center;
+}
+
 #todo__container .listContainer,
 #todo__container menu {
   box-shadow: 0 6px 15px rgba(92, 87, 94, 0.267);
@@ -195,7 +200,7 @@ form {
 }
 #todo__container .listContainer {
   list-style: none;
-  border-radius: 6px;
+  border-radius: 6px 6px 0 0;
   transition: height var(--ShortTransTime) ease-in-out;
   background-color: white;
   color: var(--DarkGrayishBlue);
@@ -375,6 +380,24 @@ form {
   color: var(--selectedTextBlue);
 }
 
+/* Mobile Menu */
+
+#todo__container .mobileMenu {
+  display: none;
+  justify-content: center;
+  margin-top: 1rem;
+  border-radius: 8px;
+}
+#todo__container .mobileMenu .filter {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  margin: 0 2rem;
+  text-align: center;
+  padding: 0;
+}
+
 /* Drag */
 
 .dragOver {
@@ -395,6 +418,7 @@ form {
   font-size: .8rem;
   text-align: center;
   color: var(--DarkGrayishBlue);
+  transition: transform 400ms ease-in-out;
 }
 
 
@@ -413,6 +437,21 @@ form {
 
 /* Media queries */
 
+#todo__container menu {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+#todo__container menu .filter {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  padding: 0;
+  margin: 0;
+  background-color: inherit;
+  transition: all 400ms 100ms ease-in-out;
+}
+
 @media screen and (max-width: 812px) {
   #todo__container {
     width: 75%;
@@ -420,8 +459,35 @@ form {
 }
 @media screen and (max-width: 550px) {
   #todo__container {
-    width: 97%;
+    width: 90%;
   }
+}
+@media screen and (max-width: 450px) {
+  #todo__container menu {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  #todo__container menu .filter {
+    width: 70%;
+    position: absolute;
+    padding: 0em 3em 1em 3em;
+    transform: translate(-50%, 10vh);
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  #todo__container menu .filter > * {
+    margin: 0 .75rem;
+  }
+  #todo__container menu > * {
+    margin: 0 .5rem;
+  }
+  .pageInfo {
+    transform: translate(0, 10vh);
+  }
+  /* #todo__container .mobileMenu {
+    display: flex;
+  } */
 }
 
 /* Preferences */

@@ -392,6 +392,8 @@
           this.addItem(new ListItem(inputValue, this.list));
           textInput.value = '';
         }
+        const noItems = document.querySelector("#noItems");
+        if (noItems) noItems.remove();
       });
       return inputContainer;
     }
@@ -492,12 +494,37 @@
         filterAllBtn.checked = true;
       });
       
+      // Draw menu Mobile
+      const mobileMenu = document.createElement("menu")
+      mobileMenu.classList.add("mobileMenu")
 
+
+      
       // append items
       this.menu.appendChild(this.counter);
       this.menu.appendChild(filter);
       this.menu.appendChild(clearBtn);
       this.form.appendChild(this.menu);
+      this.form.appendChild(mobileMenu);
+
+      // const mqList = window.matchMedia("(max-width: 450px)")
+      // mqList.addEventListener("change", (e) => {
+      //   // Mobile Menu
+      //   if (e.matches){
+      //     this.menu.appendChild(this.counter);
+      //     this.menu.appendChild(clearBtn);
+      //     this.form.appendChild(this.menu);
+      //     mobileMenu.appendChild(filter);
+      //     this.form.appendChild(mobileMenu);
+      //   } else {
+      //     // Regular menu
+      //     this.menu.appendChild(this.counter);
+      //     this.menu.appendChild(filter);
+      //     this.menu.appendChild(clearBtn);
+      //     this.form.appendChild(this.menu);
+      //   }
+      // })
+
     }
 
     updateRemainingTodos() {
@@ -518,6 +545,13 @@
         element.remove();
       })
       this.list = this.list.filter((todo) => todo.status === 'todo');
+      if (!this.list.length){
+        const listItem = document.createElement('li');
+        listItem.classList.add("listItem")
+        listItem.id = "noItems";
+        listItem.textContent = "Everythings is done. Add some more"
+        this.listContainer.appendChild(listItem)
+      }
       this.updateRemainingTodos();
     }
     
