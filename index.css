@@ -284,28 +284,35 @@ form {
   transition: opacity 200ms ease-in-out;
   opacity: 0;
 }
+#todo__container .deleteButton:hover {
+  animation: rotate 300ms ease-in 50ms forwards;
+}
 #todo__container .deleteButtonX {
-  background: white;
-  border: none;
-  width: 20px;
-  height: 1px;
-  transform: rotate(-45deg);
-  font-size: 2rem;
-  color: inherit;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 100;
   position: relative;
+  transform: rotate(-45deg);
 }
 #todo__container .deleteButtonX::after {
   content: "";
   position: absolute;
-  width: 20px;
-  height: 1px;
-  background: white;
   transform: translate(-50%, 0) rotate(-90deg);
 } 
+#todo__container .deleteButtonX,
+#todo__container .deleteButtonX::after {
+  width: 20px;
+  height: 1px;
+  background: var(--DarkGrayishBlue);
+} 
+#todo__container.darkMode .deleteButtonX,
+#todo__container.darkMode .deleteButtonX::after {
+  background: white;
+}
 #todo__container .listItem:hover .deleteButton {
   opacity: 1;
+}
+@keyframes rotate {
+  100%{
+    transform: rotate(180deg);
+  }
 }
 
 
