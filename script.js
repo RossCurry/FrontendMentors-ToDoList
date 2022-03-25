@@ -53,6 +53,7 @@
       const title = document.createElement('div');
       const circleContainer = document.createElement('div');
       circleContainer.classList.add('circleContainer');
+      const deleteButton = document.createElement('button');
       // list item
       listItem.id = itemInfo.id;
       listItem.classList.add('listItem');
@@ -62,7 +63,7 @@
       title.textContent = itemInfo.title;
       title.classList.add('listTitle');
       title.setAttribute("draggable", false)
-      //button
+      // done button
       if (itemInfo.status === 'todo') {
         doneButton.classList.add('listButton');
         title.classList.remove(".lineThrough")
@@ -70,10 +71,17 @@
         doneButton.classList.add('listButtonDone');
         title.classList.add(".lineThrough")
       }
+      // deletebutton
+      deleteButton.classList.add("deleteButton")
+      const x = document.createElement("div");
+      x.classList.add("deleteButtonX");
+      deleteButton.appendChild(x);
+      // deleteButton.textContent = "+"
       // append items
       circleContainer.appendChild(doneButton);
       listItem.appendChild(circleContainer);
       listItem.appendChild(title);
+      listItem.appendChild(deleteButton);
 
       // EventListeners
       doneButton.addEventListener('click', (e) => {
@@ -107,6 +115,20 @@
           title.classList.remove("lineThrough")
         }
       });
+      deleteButton.addEventListener("click", (e) => {
+        e.preventDefault()
+        let listElement;
+        if (e.target.parentElement.classList.contains("deleteButton")){
+          listElement = e.target.parentElement.parentElement
+        } else if (e.target.classList.contains("deleteButton")){
+          listElement = e.target.parentElement
+        }
+        if(listElement.classList.contains("listItem")) {
+          listElement.remove();
+          this.list = this.list.filter(item => item.id !== +listElement.id)
+          this.checkForNoMoreItems();
+        }
+      })
       // start to drag
       listItem.addEventListener("dragstart", dragStart)
       // While you drag
@@ -168,7 +190,6 @@
         const dataJson = e.dataTransfer.getData('application/json')
         const dataHTML = e.dataTransfer.getData('text/plain')
         dataJson && console.log('data -> ', JSON.parse(dataJson));
-        dataHTML && console.log('data -> ', dataHTML);
         const data = JSON.parse(dataJson);
         // DOM MANIPULATION
         const listAllElements = document.querySelector(".listContainer").querySelectorAll("li");
@@ -507,23 +528,23 @@
       this.form.appendChild(this.menu);
       this.form.appendChild(mobileMenu);
 
-      // const mqList = window.matchMedia("(max-width: 450px)")
-      // mqList.addEventListener("change", (e) => {
-      //   // Mobile Menu
-      //   if (e.matches){
-      //     this.menu.appendChild(this.counter);
-      //     this.menu.appendChild(clearBtn);
-      //     this.form.appendChild(this.menu);
-      //     mobileMenu.appendChild(filter);
-      //     this.form.appendChild(mobileMenu);
-      //   } else {
-      //     // Regular menu
-      //     this.menu.appendChild(this.counter);
-      //     this.menu.appendChild(filter);
-      //     this.menu.appendChild(clearBtn);
-      //     this.form.appendChild(this.menu);
-      //   }
-      // })
+      const mqList = window.matchMedia("(max-width: 450px)")
+      mqList.addEventListener("change", (e) => {
+        // Mobile Menu
+        if (e.matches){
+          this.menu.appendChild(this.counter);
+          this.menu.appendChild(clearBtn);
+          this.form.appendChild(this.menu);
+          mobileMenu.appendChild(filter);
+          this.form.appendChild(mobileMenu);
+        } else {
+          // Regular menu
+          this.menu.appendChild(this.counter);
+          this.menu.appendChild(filter);
+          this.menu.appendChild(clearBtn);
+          this.form.appendChild(this.menu);
+        }
+      })
 
     }
 
@@ -544,7 +565,11 @@
         const element = document.getElementById(`${id}`);
         element.remove();
       })
-      this.list = this.list.filter((todo) => todo.status === 'todo');
+      this.list = this.list.filter((todo) => todo.status === 'todo');this.checkForNoMoreItems();
+      this.updateRemainingTodos();
+    }
+    
+    checkForNoMoreItems(){
       if (!this.list.length){
         const listItem = document.createElement('li');
         listItem.classList.add("listItem")
@@ -552,9 +577,8 @@
         listItem.textContent = "Everythings is done. Add some more"
         this.listContainer.appendChild(listItem)
       }
-      this.updateRemainingTodos();
     }
-    
+
     filterList(filterSelection) {
       const allIds = this.list.map(item => item.id);
       const activeIdList = this.list.filter(item => item.status === "todo").map(item => item.id);
