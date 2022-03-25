@@ -7,8 +7,6 @@
     'Pick up groceries',
     'Complete Todo App on Frontend Mentor',
   ];
-  // const body = document.getElementsByTagName("body")[0];
-  // body.classList.add("lightMode");
 
   class ListItem {
     constructor(title, currentList) {
@@ -17,7 +15,6 @@
       this.created = new Date();
       this.status = 'todo';
       this.finished;
-      this.indexInList = currentList.length;
     }
   }
 
@@ -60,18 +57,18 @@
       listItem.id = itemInfo.id;
       listItem.classList.add('listItem');
       listItem.setAttribute("draggable", true)
-      listItem.setAttribute("data-index", itemInfo.indexInList)
 
       // title
       title.textContent = itemInfo.title;
       title.classList.add('listTitle');
+      title.setAttribute("draggable", false)
       //button
       if (itemInfo.status === 'todo') {
         doneButton.classList.add('listButton');
-        title.setAttribute('style', 'text-decoration-line:none');
+        title.classList.remove(".lineThrough")
       } else {
         doneButton.classList.add('listButtonDone');
-        title.setAttribute('style', 'text-decoration-line:line-through');
+        title.classList.add(".lineThrough")
       }
       // append items
       circleContainer.appendChild(doneButton);
@@ -103,11 +100,11 @@
         if (doneButton.classList.contains('listButton')) {
           doneButton.classList.remove('listButton');
           doneButton.classList.add('listButtonDone');
-          title.setAttribute('style', 'text-decoration-line:line-through');
+          title.classList.add("lineThrough")
         } else {
           doneButton.classList.remove('listButtonDone');
           doneButton.classList.add('listButton');
-          title.setAttribute('style', 'text-decoration-line:none');
+          title.classList.remove("lineThrough")
         }
       });
       // start to drag
@@ -123,7 +120,6 @@
       listItem.addEventListener("dragleave", dragLeave)
       listItem.addEventListener("drop", drop)
 
-      // listItem.addEventListener("dragstart", dragStart)
       function dragStart(e) {
         // drag data, (dataTransfer)
         // feedback image,
@@ -141,11 +137,6 @@
         this.draggedItem = e.target;
       }
       function dragEnd(e) {
-        // console.log("dragEnd", e.target.id);
-        // console.log('itemStored -> ', e.dataTransfer.getData('text/plain'));
-        // const data = e.dataTransfer.getData('text/plain')
-        // const item = JSON.parse(data);
-        // console.log('data -> ', data);
         e.target.classList.remove('drag');
         e.target.classList.remove('dragStart');
         e.target.classList.remove('dragEnd');
@@ -153,20 +144,24 @@
       // DROP TARGETS
       // preventDegfault on dragEnter & dragOver
       function dragEnter(e) {
-        const isJson = e.dataTransfer.types.includes("application/json");
+        e.preventDefault()
+        if (e.target.classList.contains("listTitle")) {
+          e.target.parentElement.classList.add("dragOver")
+        } else {
+          e.target.classList.add("dragOver")
+        }
+        // const isJson = e.dataTransfer.types.includes("application/json");
         // if (isJson) e.preventDefault(); // Drop is allowed - also for dragOver
         // console.log('dragenter', e.target.id);
-        e.target.classList.add("dragOver")
       }
       function dragOver(e) {
-        const isJson = e.dataTransfer.types.includes("application/json");
-        if (isJson) e.preventDefault(); // Drop is allowed - also for dragEnter
-        // console.log('dragOver', e.target.id);
-        // swap this dragOver target with the drag target in the HTML collection
-        
+        e.preventDefault();
+        // const isJson = e.dataTransfer.types.includes("application/json");
+        // if (isJson) e.preventDefault(); // Drop is allowed - also for dragEnter
+        // console.log('dragOver', e.target.ˇe drag target in the HTML collection
       }
       function drop(e){
-        e.target.classList.remove("dragOver")
+        e.target.classList.remove("dragOver");
         const targetElement = e.target;
         e.dataTransfer.dropEffect = "copy";
         e.dataTransfer.dropEffect = "move";
@@ -178,8 +173,13 @@
         // DOM MANIPULATION
         const listAllElements = document.querySelector(".listContainer").querySelectorAll("li");
         const listArr = Array.from(listAllElements);
-        const target = document.getElementById(`${e.target.id}`)
         const source = document.getElementById(`${data.id}`)
+        let target;
+        if (e.target.classList.contains("listTitle")){
+          target = document.getElementById(`${e.target.parentElement.id}`)
+        } else {
+          target = document.getElementById(`${e.target.id}`)
+        }
         const targetInx = listArr.indexOf(target);
         const sourceInx = listArr.indexOf(source);
         // Swapping
@@ -191,10 +191,16 @@
           const newTargetEl = listArr[targetInx+1];
           target.parentElement.insertBefore(source, newTargetEl)
         }
+        e.preventDefault();
       }
       function dragLeave(e) {
         // console.log('dragLeave', e.target.id);
-        e.target.classList.remove("dragOver")
+        if (e.target.classList.contains("listTitle")){
+
+        } else {
+          e.target.classList.remove("dragOver")
+
+        }
       }
       return listItem;
     }
@@ -416,9 +422,6 @@
       this.counter = document.createElement('div');
       const filter = document.createElement('div');
       const clearBtn = document.createElement('button');
-      const selectBlue = getComputedStyle(
-        document.documentElement
-      ).getPropertyValue('--selectedTextBlue');
       // menu classes
       this.counter.classList.add('counter');
       filter.classList.add('filter');
@@ -429,38 +432,43 @@
 
       // Filter Section
       const filterAllLabel = document.createElement('label');
-      const filterAll = document.createElement('input');
-      filterAll.type = 'radio';
-      filterAll.name = 'filter';
-      filterAll.checked = true;
-      filterAll.id = 'filterAll';
-      filterAll.value = 'all';
-      filterAllLabel.setAttribute('for', filterAll.id);
-      filterAllLabel.textContent = filterAll.value;
-      filterAllLabel.style.color = selectBlue;
-      filterAllLabel.appendChild(filterAll);
+      const filterAllBtn = document.createElement('input');
+      const filterAllTextSpan = document.createElement('span');
+      filterAllBtn.type = 'radio';
+      filterAllBtn.name = 'filter';
+      filterAllBtn.checked = true;
+      filterAllBtn.id = 'filterAll';
+      filterAllBtn.value = 'all';
+      filterAllLabel.setAttribute('for', filterAllBtn.id);
+      filterAllTextSpan.textContent = filterAllBtn.value;
+      filterAllLabel.appendChild(filterAllBtn);
+      filterAllLabel.appendChild(filterAllTextSpan);
       filter.appendChild(filterAllLabel);
       // active
       const filterActiveLabel = document.createElement('label');
-      const filterActive = document.createElement('input');
-      filterActive.type = 'radio';
-      filterActive.name = 'filter';
-      filterActive.id = 'filterActive';
-      filterActive.value = 'active';
-      filterActiveLabel.setAttribute('for', filterActive.id);
-      filterActiveLabel.textContent = filterActive.value;
-      filterActiveLabel.appendChild(filterActive);
+      const filterActiveBtn = document.createElement('input');
+      const filterActiveTextSpan = document.createElement('span');
+      filterActiveBtn.type = 'radio';
+      filterActiveBtn.name = 'filter';
+      filterActiveBtn.id = 'filterActive';
+      filterActiveBtn.value = 'active';
+      filterActiveLabel.setAttribute('for', filterActiveBtn.id);
+      filterActiveTextSpan.textContent = filterActiveBtn.value;
+      filterActiveLabel.appendChild(filterActiveBtn);
+      filterActiveLabel.appendChild(filterActiveTextSpan);
       filter.appendChild(filterActiveLabel);
       // completed
       const filterCompletedLabel = document.createElement('label');
-      const filterCompleted = document.createElement('input');
-      filterCompleted.type = 'radio';
-      filterCompleted.name = 'filter';
-      filterCompleted.id = 'filterCompleted';
-      filterCompleted.value = 'completed';
-      filterCompletedLabel.setAttribute('for', filterCompleted.id);
-      filterCompletedLabel.textContent = filterCompleted.value;
-      filterCompletedLabel.appendChild(filterCompleted);
+      const filterCompletedBtn = document.createElement('input');
+      filterCompletedBtn.type = 'radio';
+      filterCompletedBtn.name = 'filter';
+      filterCompletedBtn.id = 'filterCompleted';
+      filterCompletedBtn.value = 'completed';
+      filterCompletedLabel.setAttribute('for', filterCompletedBtn.id);
+      const filterCompletedTextSpan = document.createElement('span');
+      filterCompletedTextSpan.textContent = filterCompletedBtn.value;
+      filterCompletedLabel.appendChild(filterCompletedBtn);
+      filterCompletedLabel.appendChild(filterCompletedTextSpan);
       filter.appendChild(filterCompletedLabel);
 
       // clear button
@@ -468,26 +476,20 @@
       clearBtn.textContent = 'Clear completed';
       // eventlisteners
       filter.addEventListener('change', (e) => {
+        let count = 0;
         this.filterList(e.target.value);
-        const labels = filter.getElementsByTagName('label');
-        for (let label of labels) {
-          if (label.getAttribute('for') === e.target.id) {
-            // TODO set proper colors
-            label.style.color = selectBlue;
-          } else {
-            label.style.color = 'grey';
-          }
-        }
+        const allRadioBtns = filter.querySelectorAll("input");
+        allRadioBtns.forEach(radioBtn => {
+          if (radioBtn.id === e.target.id) radioBtn.checked = true;
+          else radioBtn.checked = false;
+        })
       });
       clearBtn.addEventListener('click', (e) => {
         e.preventDefault();
         console.log("clearBtn")
         this.clearDoneElements();
-        // this.filterList("all");
-        filterAll.checked = true;
-        filterAllLabel.style.color = selectBlue;
-        filterActiveLabel.style.color = 'grey';
-        filterCompletedLabel.style.color = 'grey';
+        this.filterList("all");
+        filterAllBtn.checked = true;
       });
       
 

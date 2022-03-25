@@ -51,6 +51,9 @@
   --VeryDarkGrayishBlue: hsl(233, 14%, 35%);
   --VeryVeryDarkGrayishBlue: hsl(237, 14%, 26%);
   --DarkBg: #15151F;
+  --Dark-list-bg: hsl(237, 14%, 26%);
+  --Dark-menu-color: hsla(234, 39%, 85%, 0.39);
+  --Dark-menu-color_hover: hsla(234, 39%, 85%, 1);
   /* transitionTime */
   --ShortTransTime: 250ms;
   --LongTransTime: 600ms;
@@ -83,7 +86,7 @@ body {
   width: 100%;
   /* background-color: rgb(190, 190, 190); */
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   background-image:  url(assets/images/bg-desktop-light.jpg);
   background-position: top;
   background-repeat: no-repeat;
@@ -102,6 +105,7 @@ form {
 #todo__container {
   width: 50%;
   transition: width var(--LongTransTime) ease-in-out;
+  align-self: center;
 }
 
 /* HEADER */
@@ -150,7 +154,7 @@ form {
   transition: background-color var(--ShortTransTime) ease-in-out;
 }
 #todo__container.darkMode .inputContainer {
-  background-color: var(--VeryDarkGrayishBlue);
+  background-color: var(--VeryDarkDesaturatedBlue);
   color: var(--LightGrayishBlue);
 }
 
@@ -166,7 +170,7 @@ form {
   width: var(--circleDiameter);
   height: var(--circleDiameter);
   border-radius: 50%;
-  border: 2px solid grey;
+  border: 2px solid #80808040;
 }
 #todo__container .inputContainer input[type='text'] {
   width: 100%;
@@ -198,7 +202,7 @@ form {
   transition: background-color var(--ShortTransTime) ease-in-out, height var(--ShortTransTime) ease-in-out;
 }
 #todo__container .listContainer.darkMode {
-  background-color: var(--VeryDarkGrayishBlue);
+  background-color: var(--VeryDarkDesaturatedBlue);
   color: var(--LightGrayishBlue);
 }
 #todo__container .listContainer ul:first-of-type {
@@ -211,7 +215,7 @@ form {
   /* background-color: inherit; */
   width: 100%;
   min-height: 60px;
-  border-bottom: 2px solid grey;
+  border-bottom: 1px solid #80808040;
   color: inherit;
   cursor: grab;
   opacity: 1;
@@ -224,7 +228,13 @@ form {
   white-space:pre-wrap;
   line-height: 1.5em;
   padding: .3em 0;
-  /* text-overflow: ellipsis; */
+  margin-right: 1rem;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+#todo__container .listItem .listTitle.lineThrough {
+  text-decoration: line-through;
+  opacity: .35;
 }
 #todo__container .listItem .listTitle::-webkit-scrollbar { 
   width: 0;
@@ -235,17 +245,15 @@ form {
 #todo__container .listItem.darkMode.dragStart {
   color: white;
   border: none;
+  cursor: grabbing;
 }
 #todo__container .listItem.drag {
-
+  cursor: grabbing;
+  
 }
-/* #todo__container .listItem:-moz-drag-over {
-  outline: 4px solid rgb(161, 56, 56);
-}  */
 
 #todo__container .listItem.drag:active {
   cursor: grabbing;
-  border-radius: 12px;
 }
 #todo__container .listItem.dragStart {
   background-color: rgba(124, 141, 235, 0.89);
@@ -258,7 +266,7 @@ form {
 }
 #todo__container .listItem.drag {
   /* display: none; */
-  opacity: 0.1;
+  opacity: 0.2;
 }
 #todo__container .listItem.dragEnd {
   /* background-color: rgba(91, 42, 216, 0.781); */
@@ -274,7 +282,7 @@ form {
   width: var(--circleDiameter);
   height: var(--circleDiameter);
   border-radius: 50%;
-  border: 2px solid grey;
+  border: 2px solid #80808040;
   background: none;
   cursor: pointer;
 }
@@ -312,11 +320,12 @@ form {
   background-color: white;
   border-radius: 0 0 6px 6px;
   transition: background-color var(--ShortTransTime) ease-in-out;
-  color: grey;
+  /* color: rgba(128, 128, 128, 0.322); */
+  color: var(--DarkGrayishBlue);
 }
 #todo__container.darkMode menu {
-  background-color: var(--VeryDarkGrayishBlue);
-  color: var(--LightGrayishBlue);
+  background-color: var(--VeryDarkDesaturatedBlue);
+  color: hsla(234, 39%, 85%, 0.39);
 }
 
 #todo__container menu .filter {
@@ -333,10 +342,19 @@ form {
 #todo__container menu .filter label {
   text-transform: capitalize;
   cursor: pointer;
-  color: inherit;
+  color: var(--DarkGrayishBlue);
 }
-#todo__container menu .filter input:active ~ label {
-  color: #AD71F2;
+#todo__container.darkMode menu .filter label {
+  color: var(--Dark-menu-color);
+}
+#todo__container menu .filter label:hover {
+  color: var(--VeryDarkGrayishBlue);
+}
+#todo__container.darkMode menu .filter label:hover {
+  color: var(--Dark-menu-color_hover);
+}
+#todo__container menu .filter input:checked+span {
+  color: var(--selectedTextBlue);
 }
 #todo__container menu button {
   background: none;
@@ -346,23 +364,37 @@ form {
   font-size: 14px;
   font-family: 'JosefinSans400';
 }
-#todo__container menu button:hover {
-  color: var(--selectedTextBlue);
+#todo__container menu button:hover  {
+  color: var(--VeryDarkGrayishBlue);
 }
-#todo__container menu button:active {
-  color: #AD71F2;
+#todo__container.darkMode menu button:hover {
+  color: hsla(234, 39%, 85%,1);
+}
+#todo__container menu button:active, 
+#todo__container.darkMode menu button:active {
+  color: var(--selectedTextBlue);
 }
 
 /* Drag */
 
 .dragOver {
-  background-color: rgba(124, 141, 235, 0.89);
+  background-color: rgba(124, 141, 235, 0.582);
+}
+.dragOver > * {
   color: whitesmoke;
 }
 .dragOver.darkMode {
-  /* background-color: rgb(248, 139, 139); */
-  background-color: rgba(91, 42, 216, 0.781);
+  background-color: rgba(91, 42, 216, 0.507);
+}
+.dragOver > * {
   color: whitesmoke;
+}
+
+.pageInfo {
+  margin-top: 2.5rem;
+  font-size: .8rem;
+  text-align: center;
+  color: var(--DarkGrayishBlue);
 }
 
 
