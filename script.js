@@ -41,7 +41,7 @@
       ) {
         this.list.push(item);
       }
-      this.updateRemainingTodos();
+      this.updateRemainingTodoCounter();
       const listItem = this.createListElement(item);
       this.listContainer.appendChild(listItem);
     }
@@ -99,7 +99,7 @@
         todoListCopy[itemIndex] = itemInfo;
         this.list = todoListCopy;
         title.textContent = itemInfo.title;
-        this.updateRemainingTodos();
+        this.updateRemainingTodoCounter();
         const filterSelection = this.menu.getElementsByTagName("input");
         for (let filterEl of filterSelection){
           if (filterEl.checked) this.filterList(filterEl.value);
@@ -230,10 +230,6 @@
       return this.list;
     }
 
-    deleteItem(deleteItem) {
-      this.list = this.list.filter((listItem) => listItem.id !== deleteItem.id);
-    }
-
     size() {
       return this.list.length;
     }
@@ -245,13 +241,12 @@
       // add form & append
       this.form = document.createElement('form');
       this.container.append(this.form);
-
       // The form
       this.form.setAttribute('id', 'todoForm');
 
-      // Draw other elements
-      // this.isDarkModePref();
       this.setSysPref();
+
+      // Draw other elements
       this.drawHeader();
       this.drawFormInput();
       this.drawList(startList);
@@ -268,8 +263,6 @@
      * and sets that in storage.
      */
     setSysPref(theme) {
-      // Is there an argument?
-      // No Argument
       if (!theme) {
         // No Argument
         // Check storage
@@ -451,7 +444,7 @@
       clearBtn.classList.add('clearBtn');
 
       // counter
-      this.updateRemainingTodos();
+      this.updateRemainingTodoCounter();
 
       // Filter Section
       const filterAllLabel = document.createElement('label');
@@ -548,7 +541,7 @@
 
     }
 
-    updateRemainingTodos() {
+    updateRemainingTodoCounter() {
       const remainingTodos = this.list.filter((todo) => todo.status === 'todo')
         .length;
       if (this.counter) {
@@ -566,7 +559,7 @@
         element.remove();
       })
       this.list = this.list.filter((todo) => todo.status === 'todo');this.checkForNoMoreItems();
-      this.updateRemainingTodos();
+      this.updateRemainingTodoCounter();
     }
     
     checkForNoMoreItems(){
