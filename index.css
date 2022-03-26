@@ -279,7 +279,7 @@ form {
   padding: 1em 0.5em;
   border: none;
   margin-left: auto;
-  margin-right: 2rem;
+  margin-right: 1rem;
   cursor: pointer;
   transition: opacity 200ms ease-in-out;
   opacity: 0;
