@@ -381,7 +381,8 @@
       submitBtn.type = 'submit';
       submitBtn.setAttribute('form', this.form.id);
       submitBtn.name = 'addTodoItem';
-      submitBtn.textContent = 'add';
+      // submitBtn.textContent = 'add';
+      submitBtn.classList.add('circleGrey');
       // circle
 
       // text input
@@ -389,8 +390,9 @@
       textInput.type = 'text';
       textInput.placeholder = 'Create a new todo...';
       // append elements
-      inputContainer.appendChild(submitBtn);
-      circleContainer.appendChild(circle);
+      // inputContainer.appendChild(submitBtn);
+      // circleContainer.appendChild(circle);
+      circleContainer.appendChild(submitBtn);
       inputContainer.appendChild(circleContainer);
       inputContainer.appendChild(textInput);
       this.form.appendChild(inputContainer);
@@ -409,13 +411,6 @@
       textInput.addEventListener('keyup', (e) => {
         inputValue = e.target.value;
       });
-      textInput.addEventListener("keydown", (e) => {
-        console.log('sub keydown -> ', inputValue);
-        e.preventDefault();
-        if (e.code === "Enter" || e.key === "Enter"){
-          addNewListItem();
-        }
-      })
       submitBtn.addEventListener('click', (e) => {
         console.log('sub click -> ', inputValue);
         e.preventDefault();
