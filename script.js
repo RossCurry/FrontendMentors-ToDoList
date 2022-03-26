@@ -511,20 +511,29 @@
       // Draw menu Mobile
       const mobileMenu = document.createElement("menu")
       mobileMenu.classList.add("mobileMenu")
-
-
       
-      // append items
-      this.menu.appendChild(this.counter);
-      this.menu.appendChild(filter);
-      this.menu.appendChild(clearBtn);
-      this.form.appendChild(this.menu);
-      this.form.appendChild(mobileMenu);
 
       const mqList = window.matchMedia("(max-width: 450px)")
+      if (mqList.matches){
+        mobileMenu.style.display = "flex";
+        this.menu.appendChild(this.counter);
+        this.menu.appendChild(clearBtn);
+        this.form.appendChild(this.menu);
+        mobileMenu.appendChild(filter);
+        this.form.appendChild(mobileMenu);
+      } else {
+        // append items
+        mobileMenu.style.display = "none";
+        this.menu.appendChild(this.counter);
+        this.menu.appendChild(filter);
+        this.menu.appendChild(clearBtn);
+        this.form.appendChild(this.menu);
+        this.form.appendChild(mobileMenu);
+      }
       mqList.addEventListener("change", (e) => {
         // Mobile Menu
         if (e.matches){
+          mobileMenu.style.display = "flex";
           this.menu.appendChild(this.counter);
           this.menu.appendChild(clearBtn);
           this.form.appendChild(this.menu);
@@ -532,6 +541,7 @@
           this.form.appendChild(mobileMenu);
         } else {
           // Regular menu
+          mobileMenu.style.display = "none";
           this.menu.appendChild(this.counter);
           this.menu.appendChild(filter);
           this.menu.appendChild(clearBtn);
