@@ -394,20 +394,32 @@
       inputContainer.appendChild(circleContainer);
       inputContainer.appendChild(textInput);
       this.form.appendChild(inputContainer);
-
-      // eventListeners
-      let inputValue;
-      textInput.addEventListener('keyup', (e) => {
-        inputValue = e.target.value;
-      });
-      submitBtn.addEventListener('click', (e) => {
-        e.preventDefault();
+      const addNewListItem = () => {
+        console.log(' addNewListItem-> ');
         if (inputValue) {
           this.addItem(new ListItem(inputValue, this.list));
           textInput.value = '';
         }
         const noItems = document.querySelector("#noItems");
         if (noItems) noItems.remove();
+      }
+
+      // eventListeners
+      let inputValue;
+      textInput.addEventListener('keyup', (e) => {
+        inputValue = e.target.value;
+      });
+      textInput.addEventListener("keydown", (e) => {
+        console.log('sub keydown -> ', inputValue);
+        e.preventDefault();
+        if (e.code === "Enter" || e.key === "Enter"){
+          addNewListItem();
+        }
+      })
+      submitBtn.addEventListener('click', (e) => {
+        console.log('sub click -> ', inputValue);
+        e.preventDefault();
+        addNewListItem();
       });
       return inputContainer;
     }
